@@ -4220,8 +4220,9 @@ function buildNode (obj)
 
    if (obj instanceof THREE.Group)
    {
-      // For editor groups, skip the first child (parent object) and only export other children
-      const childrenToExport = obj.userData?.isEditorGroup === true ? obj.children.slice(1) : obj.children;
+      // For editor groups, include all children (including the parent object as first child)
+      // so that wClass and twObjectIx values are preserved in the JSON hierarchy
+      const childrenToExport = obj.children;
 
       childrenToExport.forEach
       (
