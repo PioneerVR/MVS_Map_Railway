@@ -376,11 +376,26 @@ async #ApplyDatabaseUpdates (pConnection, sDatabaseName)
             // Initialize database if it doesn't exist
             await this.InitializeDatabase (pMVSQL);
 
-            this.ReadFromEnv (Settings.MVSF, [ "nPort", "key" ]);
-            // Force Railway PORT (string) -> integer, with sane default
-const port = parseInt(process.env.PORT || Settings.MVSF.nPort || "3000", 10);
-Settings.MVSF.nPort = port;
-            this.#pServer = new MVSF (Settings.MVSF, require ('./handler.json'), __dirname, new AuthSimple (), 'application/json');
+            this.ReadFromEnv(Settings.MVSF, ["nPort", "key"]);
+
+const resolvedPort = Number(process.env.PORT || process.env.RAILWAY_PORT || Settings.MVSF.nPort || 3000);
+
+// Force both keys; many libs expect `port`, not `nPort`.
+Settings.MVSF.nPort = resolvedPort;
+Settings.MVSF.port  = resolvedPort;
+
+// Diagnostics so we can confirm Railway env + what we're passing into MVSF
+console.log("[BOOT] ENV PORT =", process.env.PORT, "| ENV RAILWAY_PORT =", process.env.RAILWAY_PORT);
+console.log("[BOOT] Settings.MVSF.nPort =", Settings.MVSF.nPort, "| Settings.MVSF.port =", Settings.MVSF.port);
+
+this.#pServer = new MVSF(
+  Settings.MVSF,
+  require("./handler.json"),
+  __dirname,
+  new AuthSimple(),
+  "application/json"
+);
+
             this.#pServer.LoadHtmlSite (__dirname, [ './web/admin', './web/public']);
             this.#pServer.Run ();
 
