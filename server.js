@@ -17,8 +17,6 @@ class AuthSimple
    constructor ()
    {
    }
-console.log("[BOOT] server.js loaded", new Date().toISOString());
-console.log("[BOOT] ENV PORT =", process.env.PORT, "RAILWAY_PORT =", process.env.RAILWAY_PORT);
 
    Exec (bREST, sAction, pConn, Session, pData, fnRSP, fn)
    {
